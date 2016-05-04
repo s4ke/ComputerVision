@@ -119,7 +119,7 @@ public class XCorrelation {
 
 		System.out.println( "Cross correlation sequence: " + Arrays.toString( y ) );
 		System.out.println( "# of maximums: " + countMax( y ) );
-		System.out.println( "best correlation at lag value: " + firstMax( y, max( y ) ) );
+		System.out.println( "first maximum for correlation at lag value: " + firstMax( y, max( y ) ) );
 	}
 
 
