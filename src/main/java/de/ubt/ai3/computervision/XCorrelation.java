@@ -20,7 +20,7 @@ public class XCorrelation {
 		ret = new double[range];
 
 		//we calculate these in two goes, there obviously is an
-		//easier way with only loop, but nvm
+		//easier way with only one loop, but nvm
 
 		//calculate the positive lag (and 0)
 		{
@@ -72,7 +72,7 @@ public class XCorrelation {
 			}
 			else if ( curVal > max ) {
 				max = curVal;
-				count = 0;
+				count = 1;
 			}
 		}
 		return count;
@@ -117,7 +117,7 @@ public class XCorrelation {
 
 		double[] y = xcorr( a, b );
 
-		System.out.println( "result: " + Arrays.toString( y ) );
+		System.out.println( "Cross correlation sequence: " + Arrays.toString( y ) );
 		System.out.println( "# of maximums: " + countMax( y ) );
 		System.out.println( "best correlation at lag value: " + firstMax( y, max( y ) ) );
 	}
