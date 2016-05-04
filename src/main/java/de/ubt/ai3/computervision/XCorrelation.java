@@ -7,7 +7,7 @@ import java.util.Arrays;
  *
  * @author Martin Braun (1249080), Andreas Braun
  */
-public class Main {
+public class XCorrelation {
 
 	public static double[] xcorr(double[] a, double[] b) {
 		double[] ret;
