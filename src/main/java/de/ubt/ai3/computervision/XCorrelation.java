@@ -5,7 +5,7 @@ import java.util.Arrays;
 /**
  * X-correlation calculation in code
  *
- * @author Martin Braun (1249080), Andreas Braun
+ * @author Martin Braun (1249080), Andreas Braun (1200197)
  */
 public class XCorrelation {
 
