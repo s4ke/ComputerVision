@@ -22,7 +22,7 @@ public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
 
-        String filename = "/Beispiel.pcm";
+        String filename = "/MFV.pcm";
 
         // Read raw file
         InputStream inputStream = Main.class.getResourceAsStream(filename);
@@ -52,10 +52,16 @@ public class Main {
         N = samples_per_second * 2;
         System.out.println("Using only first " + N + " values.");
 
+        //for the
+
         // Convert values to Complex because FFT needs complex values
         Complex[] c = new Complex[N];
         for (int i = 0; i < N; ++i) {
-            c[i] = new Complex(content.get(i), 0); // imaginary part is zero
+            if(i < content.size()) {
+                c[i] = new Complex( content.get( i ), 0 ); // imaginary part is zero
+            } else {
+                c[i] = new Complex(0, 0);
+            }
         }
 
         // calculate FFT
