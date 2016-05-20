@@ -1,4 +1,4 @@
-package de.ubt.ai3.computervision;
+package de.ubt.ai3.computervision.xcorr;
 
 import java.util.Arrays;
 
