@@ -1,13 +1,16 @@
 package de.ubt.ai3.computervision.fft;
 
+import java.awt.*;
 import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartFrame;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
@@ -22,8 +25,11 @@ public class MainMFV {
 
 
 	public static void main(String[] args) throws IOException {
+
+		String filename = "/MFV.pcm";
+
 		// Read raw file
-		FileInputStream inputStream = new FileInputStream( args[0] );
+		InputStream inputStream = MainMFV.class.getResourceAsStream( filename );
 		DataInputStream dataInputStream = new DataInputStream( inputStream );
 
 		List<Short> content = new ArrayList<Short>();  // values in pcm files are encoded as shorts (2 bytes).
@@ -98,7 +104,7 @@ public class MainMFV {
 			// plot data
 			XYSeriesCollection data = new XYSeriesCollection( series );
 			JFreeChart chart = ChartFactory.createXYLineChart(
-					"FFT " + args[0] + "_part_" + wantedPart,
+					"FFT " + filename + "_part_" + wantedPart,
 					"Frequency",
 					"Magnitude",
 					data,
@@ -108,7 +114,7 @@ public class MainMFV {
 					false
 			);
 
-			ChartUtilities.saveChartAsPNG( new File( "part" + wantedPart + ".png" ), chart, 800, 600 );
+			ChartUtilities.saveChartAsPNG( new File("part" + wantedPart + ".png"), chart, 800, 600 );
 		}
 
 	}
