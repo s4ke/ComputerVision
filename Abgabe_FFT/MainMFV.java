@@ -1,5 +1,13 @@
-package de.ubt.ai3.computervision.fft;
-
+/*
+ * compile similar to the original version of this file
+ * we basically just generate parts of the original signal with this
+ * program so we can interpret the plots. We know that the original
+ * signal contains 4 beeps with a somewhat equal delay between each other
+ * 
+ * This means that we can just split the stream in a suitable amount of
+ * parts and then identify the frequencies. This has to be done by hand here
+ * as this was not specifically asked in the exercise ;)
+ */
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,7 +22,9 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-
+/**
+ * @authors Martin Braun, Andreas Braun
+ */
 public class MainMFV {
 
 
@@ -22,7 +32,7 @@ public class MainMFV {
 
 
 	public static void main(String[] args) throws IOException {
-		// Read raw file
+		// Read raw file (path to the *.pcm fil goes here)
 		FileInputStream inputStream = new FileInputStream( args[0] );
 		DataInputStream dataInputStream = new DataInputStream( inputStream );
 
