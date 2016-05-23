@@ -1,16 +1,13 @@
 package de.ubt.ai3.computervision.fft;
 
-import java.awt.*;
 import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartFrame;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
@@ -50,9 +47,17 @@ public class MainMFV {
 			return;
 		}
 
+		//we know about the signal here
+		//this approach only works if there is a change
+		//in the frequency that is used.
+		//but for the exercise that's okay
+		//as the 4 sounds are all different
+
+		List<List<Double>> partFreqs = new ArrayList<>();
+
 		//adjust this to split the signal into a different amount of parts
 		int parts = 8;
-		for(int wantedPart = 0; wantedPart < parts + 1; ++wantedPart) {
+		for ( int wantedPart = 0; wantedPart < parts + 1; ++wantedPart ) {
 
 			int N = content.size();
 			System.out.println( "File read with " + N + " samples." );
@@ -84,6 +89,10 @@ public class MainMFV {
 			// data for plot
 			XYSeries series = new XYSeries( "FFT" );
 
+			List<Double> frequenciesOverThreshold = new ArrayList<>();
+
+			double thresh = 10.0d;
+
 			// print output
 			for ( int i = 0; i < N / 2; i++ ) {
 				double frequency = i * samples_per_second / N;
@@ -92,6 +101,10 @@ public class MainMFV {
 
 				// add magnitude to plot data
 				series.add( frequency, magnitude );
+
+				if ( magnitude > thresh ) {
+					frequenciesOverThreshold.add( frequency );
+				}
 
 				// print some values to console
 				if ( i % 100 == 0 ) {
@@ -114,8 +127,39 @@ public class MainMFV {
 					false
 			);
 
-			ChartUtilities.saveChartAsPNG( new File("part" + wantedPart + ".png"), chart, 800, 600 );
+			ChartUtilities.saveChartAsPNG( new File( "part" + wantedPart + ".png" ), chart, 800, 600 );
+
+			//clean up the frequencies OverThreshold into buckets
+			List<Double> frequencyBuckets = new ArrayList<>();
+			double last = -1000;
+			for ( Double fr : frequenciesOverThreshold ) {
+				if ( Math.abs( last - fr ) > 20 ) {
+					if ( last > 0 ) {
+						frequencyBuckets.add( last );
+					}
+				}
+				last = fr;
+			}
+			if ( last > 0 ) {
+				frequencyBuckets.add( last );
+			}
+
+			partFreqs.add( frequencyBuckets );
 		}
+
+		List<List<Double>> cleanedUp = new ArrayList<>();
+		boolean written = false;
+		for ( List<Double> cur : partFreqs ) {
+			if ( !written ) {
+				cleanedUp.add(cur);
+				written = true;
+			}
+			if ( cur.size() != 2 ) {
+				written = false;
+			}
+		}
+
+		System.out.println( cleanedUp );
 
 	}
 

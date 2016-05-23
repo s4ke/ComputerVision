@@ -10,8 +10,8 @@
  */
 import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,9 +22,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-/**
- * @authors Martin Braun, Andreas Braun
- */
+
 public class MainMFV {
 
 
@@ -32,8 +30,11 @@ public class MainMFV {
 
 
 	public static void main(String[] args) throws IOException {
-		// Read raw file (path to the *.pcm fil goes here)
-		FileInputStream inputStream = new FileInputStream( args[0] );
+
+		String filename = "/MFV.pcm";
+
+		// Read raw file from the CLASSPATH
+		InputStream inputStream = MainMFV.class.getResourceAsStream( filename );
 		DataInputStream dataInputStream = new DataInputStream( inputStream );
 
 		List<Short> content = new ArrayList<Short>();  // values in pcm files are encoded as shorts (2 bytes).
@@ -54,9 +55,17 @@ public class MainMFV {
 			return;
 		}
 
+		//we know about the signal here
+		//this approach only works if there is a change
+		//in the frequency that is used.
+		//but for the exercise that's okay
+		//as the 4 sounds are all different
+
+		List<List<Double>> partFreqs = new ArrayList<>();
+
 		//adjust this to split the signal into a different amount of parts
 		int parts = 8;
-		for(int wantedPart = 0; wantedPart < parts + 1; ++wantedPart) {
+		for ( int wantedPart = 0; wantedPart < parts + 1; ++wantedPart ) {
 
 			int N = content.size();
 			System.out.println( "File read with " + N + " samples." );
@@ -88,6 +97,10 @@ public class MainMFV {
 			// data for plot
 			XYSeries series = new XYSeries( "FFT" );
 
+			List<Double> frequenciesOverThreshold = new ArrayList<>();
+
+			double thresh = 10.0d;
+
 			// print output
 			for ( int i = 0; i < N / 2; i++ ) {
 				double frequency = i * samples_per_second / N;
@@ -96,6 +109,10 @@ public class MainMFV {
 
 				// add magnitude to plot data
 				series.add( frequency, magnitude );
+
+				if ( magnitude > thresh ) {
+					frequenciesOverThreshold.add( frequency );
+				}
 
 				// print some values to console
 				if ( i % 100 == 0 ) {
@@ -108,7 +125,7 @@ public class MainMFV {
 			// plot data
 			XYSeriesCollection data = new XYSeriesCollection( series );
 			JFreeChart chart = ChartFactory.createXYLineChart(
-					"FFT " + args[0] + "_part_" + wantedPart,
+					"FFT " + filename + "_part_" + wantedPart,
 					"Frequency",
 					"Magnitude",
 					data,
@@ -119,7 +136,38 @@ public class MainMFV {
 			);
 
 			ChartUtilities.saveChartAsPNG( new File( "part" + wantedPart + ".png" ), chart, 800, 600 );
+
+			//clean up the frequencies OverThreshold into buckets
+			List<Double> frequencyBuckets = new ArrayList<>();
+			double last = -1000;
+			for ( Double fr : frequenciesOverThreshold ) {
+				if ( Math.abs( last - fr ) > 20 ) {
+					if ( last > 0 ) {
+						frequencyBuckets.add( last );
+					}
+				}
+				last = fr;
+			}
+			if ( last > 0 ) {
+				frequencyBuckets.add( last );
+			}
+
+			partFreqs.add( frequencyBuckets );
 		}
+
+		List<List<Double>> cleanedUp = new ArrayList<>();
+		boolean written = false;
+		for ( List<Double> cur : partFreqs ) {
+			if ( !written ) {
+				cleanedUp.add(cur);
+				written = true;
+			}
+			if ( cur.size() != 2 ) {
+				written = false;
+			}
+		}
+
+		System.out.println( cleanedUp );
 
 	}
 
