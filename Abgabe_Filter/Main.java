@@ -1,6 +1,7 @@
 //compile as usual, images 2b.png and 2c.png are expected
 //to be in the same directory as this is run in.
 //the output is stored in the same directory as well.
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -57,14 +58,9 @@ public class Main {
 		//we save the intermediary image here, so we don't lose information
 		//too soon
 		double[][] intermediary = new double[imageHeight][imageWidth];
-		for ( int i = 0; i < imageHeight; ++i ) {
-			for ( int j = 0; j < imageWidth; ++j ) {
-				intermediary[i][j] = image[i][j];
-			}
-		}
 
-		int highestVal = Integer.MIN_VALUE;
-		int lowestVal = Integer.MAX_VALUE;
+		double highestVal = Double.MIN_VALUE;
+		double lowestVal = Double.MAX_VALUE;
 
 		//we don't filter the edges where the filter wouldn't fit
 		//completely, but we don't crop the output image here just yet
@@ -85,8 +81,8 @@ public class Main {
 		System.out.println( "highestVal: " + highestVal );
 		System.out.println( "lowestVal: " + lowestVal );
 
-		int add = Math.abs( Math.min( 0, lowestVal ) );
-		int highestAdded = add + highestVal;
+		double add = Math.abs( Math.min( 0.0, lowestVal ) );
+		double highestAdded = add + highestVal;
 
 		//rescale the values in the image and store it back into the array
 		for ( int y = 0; y < imageHeight; ++y ) {
@@ -184,6 +180,12 @@ public class Main {
 				grayscale[y][x] = (colorModel.getRed( array[y * width + x] )
 						+ colorModel.getGreen( array[y * width + x] ) + colorModel
 						.getBlue( array[y * width + x] )) / 3;
+			}
+		}
+
+		return grayscale;
+	}
+}
 			}
 		}
 
