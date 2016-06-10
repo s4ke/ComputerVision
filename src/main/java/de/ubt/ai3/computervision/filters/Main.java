@@ -21,7 +21,7 @@ public class Main {
 	 * @param filterIn is stored so that the upper left is -1, -1 in the
 	 * 3x3 case
 	 */
-	public static void applyFilter(int[][] image, int[][] filterIn) {
+	public static int[][] applyFilter(int[][] image, int[][] filterIn) {
 		int imageHeight = image.length;
 		int imageWidth = image[0].length;
 
@@ -30,7 +30,7 @@ public class Main {
 
 		{
 			int totalValue = 0;
-			double[][] filter = new double[filterWidth][filterHeight];
+			double[][] filter = new double[filterHeight][filterWidth];
 			for ( int i = 0; i < filterWidth; ++i ) {
 				for ( int j = 0; j < filterHeight; ++j ) {
 					filter[i][j] = filterIn[i][j];
@@ -38,13 +38,11 @@ public class Main {
 				}
 			}
 
-			/*
 			for ( int i = 0; i < filterWidth; ++i ) {
 				for ( int j = 0; j < filterHeight; ++j ) {
 					filter[i][j] /= totalValue;
 				}
 			}
-			*/
 		}
 
 		if ( filterHeight % 2 == 0 || filterWidth % 2 == 0 ) {
@@ -55,30 +53,72 @@ public class Main {
 		int amountToCropX = filterWidth / 2;
 		int amountToCropY = filterHeight / 2;
 
-		//we dont filter the edges where the filter wouldn't fit
+		//we save the intermediary image here, so we don't lose information
+		//too soon
+		double[][] intermediary = new double[imageHeight][imageWidth];
+		for ( int i = 0; i < imageHeight; ++i ) {
+			for ( int j = 0; j < imageWidth; ++j ) {
+				intermediary[i][j] = image[i][j];
+			}
+		}
+
+		int highestVal = Integer.MIN_VALUE;
+		int lowestVal = Integer.MAX_VALUE;
+
+		//we don't filter the edges where the filter wouldn't fit
 		//completely, but we don't crop the output image here just yet
-		for ( int y = amountToCropY; y < (imageHeight - amountToCropY - 1); ++y ) {
-			for ( int x = amountToCropX; x < (imageWidth - amountToCropX - 1); ++x ) {
+		for ( int y = amountToCropY; y < (imageHeight - amountToCropY); ++y ) {
+			for ( int x = amountToCropX; x < (imageWidth - amountToCropX); ++x ) {
 				int value = 0;
 				for ( int i = 0; i < filterWidth; ++i ) {
 					for ( int j = 0; j < filterHeight; ++j ) {
 						value += image[y - amountToCropY + i][x - amountToCropX + i] * filter[j][i];
-						//scale here
 					}
 				}
-				image[y][x] = value;
+				highestVal = Math.max( highestVal, value );
+				lowestVal = Math.min( lowestVal, value );
+				intermediary[y][x] = value;
 			}
 		}
+
+		System.out.println( "highestVal: " + highestVal );
+		System.out.println( "lowestVal: " + lowestVal );
+
+		int add = Math.abs( Math.min( 0, lowestVal ) );
+		int highestAdded = add + highestVal;
+
+		//rescale the values in the image and store it back into the array
+		for ( int y = 0; y < imageHeight; ++y ) {
+			for ( int x = 0; x < imageWidth; ++x ) {
+				try {
+					double value = intermediary[y][x];
+					double scale = value / highestAdded;
+					intermediary[y][x] = scale * 255;
+				}
+				catch (ArrayIndexOutOfBoundsException e) {
+					System.out.println();
+				}
+			}
+		}
+
+		//crop the output image (everything was properly ignored beforehand, we just
+		//didn't make the signal smaller)
+		int[][] out = new int[imageHeight - 2 * amountToCropY][imageWidth - 2 * amountToCropX];
+		for(int y = 0; y < out.length; ++y) {
+			for(int x = 0; x < out[0].length; ++x) {
+				out[y][x] = (int) intermediary[y + amountToCropY][x + amountToCropX];
+			}
+		}
+		return out;
 	}
 
 	public static void main(String[] args) throws Exception {
-
 		// Load Image from file into 2D-array
 		// First index is row, second index is column of image
 		// Array contains grayscale values in range 0-255
 		int[][] imArray = loadFromFile( "test.png" );
 
-		applyFilter( imArray, filter );
+		imArray = applyFilter( imArray, filter );
 
 		// Save array back to file
 		saveToFile( imArray, "out.png", "png" );
