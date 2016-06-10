@@ -11,39 +11,33 @@ import java.io.IOException;
 
 public class Main {
 
-	private static int[][] filter = {
+	private static final String bIn = "2b.png";
+	private static final String cIn = "2c.png";
+
+	private static double[][] filterB = {
 			{0, -2, 0},
 			{-2, 7, -2},
 			{0, -2, 0}
 	};
 
+	private static double[][] filterC = {
+			{
+					-4, -3, 0, 5, 10, 15, 19, 20, 19, 15, 10, 5, 0, -3, -4
+			}
+	};
+
 	/**
-	 * @param filterIn is stored so that the upper left is -1, -1 in the
+	 * @param filter is stored so that the upper left is -1, -1 in the
 	 * 3x3 case
 	 */
-	public static int[][] applyFilter(int[][] image, int[][] filterIn) {
+	public static int[][] applyFilter(int[][] image, double[][] filter) {
 		int imageHeight = image.length;
 		int imageWidth = image[0].length;
 
-		int filterHeight = filterIn.length;
-		int filterWidth = filterIn[0].length;
+		int filterHeight = filter.length;
+		int filterWidth = filter[0].length;
 
-		{
-			int totalValue = 0;
-			double[][] filter = new double[filterHeight][filterWidth];
-			for ( int i = 0; i < filterWidth; ++i ) {
-				for ( int j = 0; j < filterHeight; ++j ) {
-					filter[i][j] = filterIn[i][j];
-					totalValue += Math.abs( filter[i][j] );
-				}
-			}
-
-			for ( int i = 0; i < filterWidth; ++i ) {
-				for ( int j = 0; j < filterHeight; ++j ) {
-					filter[i][j] /= totalValue;
-				}
-			}
-		}
+		System.out.println( "imageWidth: " + imageWidth + ", imageHeight: " + imageHeight + ", filterWidth: " + filterWidth + ", filterHeight: " + filterHeight );
 
 		if ( filterHeight % 2 == 0 || filterWidth % 2 == 0 ) {
 			throw new IllegalArgumentException( "filterHeight or filterWidth must not be even" );
@@ -70,9 +64,9 @@ public class Main {
 		for ( int y = amountToCropY; y < (imageHeight - amountToCropY); ++y ) {
 			for ( int x = amountToCropX; x < (imageWidth - amountToCropX); ++x ) {
 				int value = 0;
-				for ( int i = 0; i < filterWidth; ++i ) {
-					for ( int j = 0; j < filterHeight; ++j ) {
-						value += image[y - amountToCropY + i][x - amountToCropX + i] * filter[j][i];
+				for ( int j = 0; j < filterHeight; ++j ) {
+					for ( int i = 0; i < filterWidth; ++i ) {
+						value += image[y - amountToCropY + j][x - amountToCropX + i] * filter[j][i];
 					}
 				}
 				highestVal = Math.max( highestVal, value );
@@ -104,8 +98,8 @@ public class Main {
 		//crop the output image (everything was properly ignored beforehand, we just
 		//didn't make the signal smaller)
 		int[][] out = new int[imageHeight - 2 * amountToCropY][imageWidth - 2 * amountToCropX];
-		for(int y = 0; y < out.length; ++y) {
-			for(int x = 0; x < out[0].length; ++x) {
+		for ( int y = 0; y < out.length; ++y ) {
+			for ( int x = 0; x < out[0].length; ++x ) {
 				out[y][x] = (int) intermediary[y + amountToCropY][x + amountToCropX];
 			}
 		}
@@ -113,15 +107,17 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws Exception {
-		// Load Image from file into 2D-array
-		// First index is row, second index is column of image
-		// Array contains grayscale values in range 0-255
-		int[][] imArray = loadFromFile( "test.png" );
+		{
+			int[][] imArray = loadFromFile( bIn );
+			imArray = applyFilter( imArray, filterB );
+			saveToFile( imArray, "b_out.png", "png" );
+		}
 
-		imArray = applyFilter( imArray, filter );
-
-		// Save array back to file
-		saveToFile( imArray, "out.png", "png" );
+		{
+			int[][] imArray = loadFromFile( cIn );
+			imArray = applyFilter( imArray, filterC );
+			saveToFile( imArray, "c_out.png", "png" );
+		}
 	}
 
 
