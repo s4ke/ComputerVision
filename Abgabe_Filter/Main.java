@@ -1,5 +1,6 @@
-package de.ubt.ai3.computervision.filters;
-
+//compile as usual, images 2b.png and 2c.png are expected
+//to be in the same directory as this is run in.
+//the output is stored in the same directory as well.
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
