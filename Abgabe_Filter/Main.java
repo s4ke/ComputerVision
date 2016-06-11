@@ -87,14 +87,9 @@ public class Main {
 		//rescale the values in the image and store it back into the array
 		for ( int y = 0; y < imageHeight; ++y ) {
 			for ( int x = 0; x < imageWidth; ++x ) {
-				try {
-					double value = intermediary[y][x];
-					double scale = value / highestAdded;
-					intermediary[y][x] = scale * 255;
-				}
-				catch (ArrayIndexOutOfBoundsException e) {
-					System.out.println();
-				}
+				double value = intermediary[y][x];
+				double scale = value / highestAdded;
+				intermediary[y][x] = scale * 255;
 			}
 		}
 
