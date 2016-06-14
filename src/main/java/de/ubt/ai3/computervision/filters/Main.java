@@ -79,15 +79,14 @@ public class Main {
 		System.out.println( "highestVal: " + highestVal );
 		System.out.println( "lowestVal: " + lowestVal );
 
-		double add = Math.abs( Math.min( 0.0, lowestVal ) );
-		double highestAdded = add + highestVal;
+		double scale = 255 / (highestVal - lowestVal);
+		double offset = -lowestVal * scale;
 
 		//rescale the values in the image and store it back into the array
 		for ( int y = 0; y < imageHeight; ++y ) {
 			for ( int x = 0; x < imageWidth; ++x ) {
 				double value = intermediary[y][x];
-				double scale = value / highestAdded;
-				intermediary[y][x] = scale * 255;
+				intermediary[y][x] = value * scale + offset;
 			}
 		}
 
