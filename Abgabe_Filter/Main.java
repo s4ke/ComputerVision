@@ -181,9 +181,3 @@ public class Main {
 		return grayscale;
 	}
 }
-			}
-		}
-
-		return grayscale;
-	}
-}
