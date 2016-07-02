@@ -18,3 +18,5 @@ target/
 
 *.iml
 .idea/libraries/*
+
+*Thumbs.db
