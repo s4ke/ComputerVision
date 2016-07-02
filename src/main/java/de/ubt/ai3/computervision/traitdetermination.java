@@ -49,11 +49,9 @@ public class TraitDetermination {
         }
 
         // compute normalized central moments
-        double normCentralMoment20 = 0;
-        double normCentralMoment02 = 0;
         // gamma = 2 for both cases
-        normCentralMoment02 = (centralMoment02 / Math.pow(centralMoment00, 2));
-        normCentralMoment20 = (centralMoment20 / Math.pow(centralMoment00, 2));
+        double normCentralMoment20 = (centralMoment02 / Math.pow(centralMoment00, 2));
+        double normCentralMoment02 = (centralMoment20 / Math.pow(centralMoment00, 2));
 
         // compute first invariant moment
         firstInvariantMoment = normCentralMoment20 + normCentralMoment02;
@@ -83,14 +81,6 @@ public class TraitDetermination {
             String fileName = "test" + i + ".png";
             int[][] imArray = loadFromFile(fileName);
 
-            // image dimensions can be obtained with
-            int height = imArray.length;
-            int width = imArray[0].length;
-
-            // Do your image processing here
-            // for example setting left top pixel to white:
-            //imArray[0][0] = 255;
-
             //#######################################################
             // computation of both traits for the four given examples
             //#######################################################
@@ -102,33 +92,6 @@ public class TraitDetermination {
             System.out.println("first invariant moment: " + firstInvariantMoment);
             System.out.println("object size: " + objectSize);
         }
-
-        // Save array back to file
-        //saveToFile(imArray, "out.png", "png");
-    }
-
-
-    /**
-     * Save image to file
-     *
-     * @param pixels   2D-grayscale image from 0-255
-     * @param filename e.g. "test.png"
-     * @param type     e.g. "bmp", "png", ...
-     */
-    public static void saveToFile(int[][] pixels, String filename, String type) throws IOException {
-        // Convert to RGB
-        int height = pixels.length;
-        int width = pixels[0].length;
-        int[] rgb = new int[width * height];
-        for (int y = 0; y < height; y++)
-            for (int x = 0; x < width; x++)
-                rgb[y * width + x] = (pixels[y][x] << 16) + (pixels[y][x] << 8) + pixels[y][x];
-
-        // save to file
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        image.setRGB(0, 0, width, height, rgb, 0, width);
-        File file = new File(filename);
-        ImageIO.write(image, type, file);
     }
 
     /**
