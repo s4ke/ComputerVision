@@ -19,15 +19,16 @@ public class GradientDecline {
 
 	private static final int[] classes = {1, 1, 1, 1, 2, 2, 2, 2, 2, 2};
 
-	private static final double FIX_THETA = 0.3;
+	private static final double FIX_THETA = -0.3;
 
 	public static void main(String[] args) {
-		double[] a = {13, -3, 1};
+		double[] a = {13, -3, -1};
+
 		List<double[]> as = new ArrayList<>();
 		as.add( a );
 		for ( int k = 0; k < 2; ++k ) {
 			double[] lastA = as.get( as.size() - 1 );
-			double[] curA = minus( lastA, perceptronFunction( lastA, y, classes ) * thetha( k ) );
+			double[] curA = plus( lastA, times( sumUpWrongClassified( lastA, y, classes ), thetha( k ) ) );
 			as.add( curA );
 		}
 		for ( double[] vec : as ) {
@@ -51,10 +52,26 @@ public class GradientDecline {
 		return FIX_THETA;
 	}
 
-	public static double[] minus(double[] x, double y) {
+	public static double[] minus(double[] x, double[] y) {
 		double[] ret = new double[x.length];
 		for ( int i = 0; i < x.length; ++i ) {
-			ret[i] = x[i] - y;
+			ret[i] = x[i] - y[i];
+		}
+		return ret;
+	}
+
+	public static double[] plus(double[] x, double[] y) {
+		double[] ret = new double[x.length];
+		for ( int i = 0; i < x.length; ++i ) {
+			ret[i] = x[i] + y[i];
+		}
+		return ret;
+	}
+
+	public static double[] times(double[] x, double y) {
+		double[] ret = new double[x.length];
+		for ( int i = 0; i < x.length; ++i ) {
+			ret[i] = x[i] * y;
 		}
 		return ret;
 	}
@@ -84,7 +101,7 @@ public class GradientDecline {
 
 	public static Set<Integer> wrongClassification(double[] a, double[][] ys, int[] actualClassification) {
 		Set<Integer> ret = new HashSet<>();
-		for ( int i = 0; i < y.length; ++i ) {
+		for ( int i = 0; i < ys.length; ++i ) {
 			int expectedClass = actualClassification[i];
 			int calculatedClass = classification( g( a, ys[i] ) );
 			if ( calculatedClass != expectedClass ) {
@@ -94,11 +111,13 @@ public class GradientDecline {
 		return ret;
 	}
 
-	public static double perceptronFunction(double[] a, double[][] ys, int[] actualClassification) {
+	public static double[] sumUpWrongClassified(double[] a, double[][] ys, int[] actualClassification) {
 		Set<Integer> wrongClassifications = wrongClassification( a, ys, actualClassification );
-		double ret = 0;
+		double[] ret = new double[a.length];
 		for ( Integer wrongClassifiedIdx : wrongClassifications ) {
-			ret -= g( a, y[wrongClassifiedIdx] );
+			for ( int i = 0; i < ret.length; ++i ) {
+				ret[i] += y[wrongClassifiedIdx][i];
+			}
 		}
 		return ret;
 	}
