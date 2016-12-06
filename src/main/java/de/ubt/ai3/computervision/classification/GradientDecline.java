@@ -28,7 +28,7 @@ public class GradientDecline {
 	//private static final int[] classes = {1, 1, 1, 1, 2, 2, 2, 2, 2, 2};
 	private static final int[] classes = {1, 1, 2};
 
-	private static final double FIX_THETA = -0.3;
+	private static final double FIX_THETA = -1;
 
 	public static void main(String[] args) {
 		//double[] a = {13, -3, -1};
@@ -50,10 +50,10 @@ public class GradientDecline {
 			double[] a_i = as.get( i );
 			Set<Integer> wrongClassifieds = wrongClassification( a_i, y, classes );
 			if ( wrongClassification( a_i, y, classes ).size() == 0 ) {
-				System.out.println( "we can classify everything for a(" + (i + 1) + ")=" + Arrays.toString( a_i ) );
+				System.out.println( "we can classify everything for a(" + i + ")=" + Arrays.toString( a_i ) );
 			}
 			else {
-				System.out.println( "we can NOT classify everything with the the a(" + (i + 1) + ")=" + Arrays.toString(
+				System.out.println( "we can NOT classify everything with the the a(" + i + ")=" + Arrays.toString(
 						a_i ) + " the set of not classifiable indexes was: " + wrongClassifieds.stream()
 						.map( (e -> e + 1) )
 						.collect(
