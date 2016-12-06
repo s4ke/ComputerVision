@@ -5,34 +5,44 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Martin Braun
  */
 public class GradientDecline {
 
-	private static final double[][] y = {
+	/*private static final double[][] y = {
 			{1, 1, 1}, {1, 0, 1}, {1, 0, 4}, {1, 1, 0},
 			{-1, 0, -16}, {-1, -1, -16}, {-1, -4, -4}, {-1, -4, -9},
 			{-1, -1, -9}, {-1, -9, -1}
 	};
 
-	private static final int[] classes = {1, 1, 1, 1, 2, 2, 2, 2, 2, 2};
+	private static final int[] classes = {1, 1, 1, 1, 2, 2, 2, 2, 2, 2};*/
+
+	private static final double[][] y = {
+			{1, 3}, {1, 1},
+			{-1, 2}
+	};
+
+	//private static final int[] classes = {1, 1, 1, 1, 2, 2, 2, 2, 2, 2};
+	private static final int[] classes = {1, 1, 2};
 
 	private static final double FIX_THETA = -0.3;
 
 	public static void main(String[] args) {
-		double[] a = {13, -3, -1};
+		//double[] a = {13, -3, -1};
+		double[] a = {-1, 4};
 
 		List<double[]> as = new ArrayList<>();
 		as.add( a );
-		for ( int k = 0; k < 2; ++k ) {
+		for ( int k = 0; k < 100; ++k ) {
 			double[] lastA = as.get( as.size() - 1 );
 			double[] curA = plus( lastA, times( sumUpWrongClassified( lastA, y, classes ), thetha( k ) ) );
 			as.add( curA );
-		}
-		for ( double[] vec : as ) {
-			System.out.println( Arrays.toString( vec ) );
+			if ( wrongClassification( curA, y, classes ).size() == 0 ) {
+				break;
+			}
 		}
 
 		//is the nth iterative version okay?
@@ -40,10 +50,14 @@ public class GradientDecline {
 			double[] a_i = as.get( i );
 			Set<Integer> wrongClassifieds = wrongClassification( a_i, y, classes );
 			if ( wrongClassification( a_i, y, classes ).size() == 0 ) {
-				System.out.println( "we can classify everything with the " + i + "th iterated value for a" );
+				System.out.println( "we can classify everything for a(" + (i + 1) + ")=" + Arrays.toString( a_i ) );
 			}
 			else {
-				System.out.println( "we can NOT classify everything with the the " + i + "th iterated value for a. the set of not classifiable indexes was: " + wrongClassifieds );
+				System.out.println( "we can NOT classify everything with the the a(" + (i + 1) + ")=" + Arrays.toString(
+						a_i ) + " the set of not classifiable indexes was: " + wrongClassifieds.stream()
+						.map( (e -> e + 1) )
+						.collect(
+								Collectors.toList() ) );
 			}
 		}
 	}
