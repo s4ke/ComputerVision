@@ -1,4 +1,4 @@
-package Abgabe_Relaxation;//compile with javac GradientDecline.java
+//compile with javac GradientDecline.java
 //run with java GradientDecline
 
 import Jama.Matrix;
